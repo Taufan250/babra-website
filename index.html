@@ -1,28 +1,23 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Babra Julyastika Partner Sejatiku ✨</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
       font-family: 'Segoe UI', sans-serif;
       background-color: #e0f0ff;
       color: #003366;
-    }
-
-    header {
-      background-color: #007acc;
-      padding: 1rem;
-      text-align: center;
-      color: white;
-    }
-
-    h1 {
       margin: 0;
-      font-size: 2rem;
+      padding: 0;
+    }
+
+    header, footer {
+      background-color: #007acc;
+      color: white;
+      text-align: center;
+      padding: 1rem;
     }
 
     main {
@@ -30,82 +25,99 @@
     }
 
     section {
-      margin-bottom: 2rem;
       background-color: white;
-      padding: 1rem;
       border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 2rem;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
 
-    section h2 {
+    h2 {
       color: #005999;
     }
 
-    footer {
-      background-color: #007acc;
-      color: white;
-      text-align: center;
-      padding: 1rem;
-    }
-
-    #chatOutput {
-      margin-top: 1rem;
-      padding: 1rem;
-      background: #f0f8ff;
-      border-radius: 8px;
-    }
-
-    input[type="text"] {
-      width: 70%;
+    input, textarea, button, select {
+      font-family: inherit;
+      margin-top: 0.5rem;
       padding: 0.5rem;
-      margin-right: 0.5rem;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
 
     button {
-      padding: 0.5rem 1rem;
       background-color: #007acc;
       color: white;
       border: none;
-      border-radius: 6px;
+      margin-top: 1rem;
       cursor: pointer;
     }
 
     button:hover {
       background-color: #005fa3;
     }
+
+    .chat-box {
+      background: #f0f8ff;
+      border-radius: 8px;
+      padding: 1rem;
+      height: 200px;
+      overflow-y: auto;
+      margin-top: 1rem;
+    }
+
+    .note-list {
+      margin-top: 1rem;
+    }
+
+    .note-item {
+      background-color: #f0f8ff;
+      border-left: 5px solid #007acc;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+    }
   </style>
 </head>
 <body>
+
   <header>
     <h1>💙 Babra Julyastika Partner Sejatiku ✨</h1>
-    <p>Asisten Pribadi yang Setia, Ceria, dan Bisa Diandalkan! 💬📊🎵⏰</p>
+    <p>Asisten Pribadi yang Setia, Ceria, dan Bisa Diandalkan!</p>
   </header>
 
   <main>
+    <!-- FITUR CHAT -->
     <section>
       <h2>1. Ngobrol Banyak Hal 💬</h2>
-      <input type="text" id="chatInput" placeholder="Tulis pesan kamu..." />
-      <button onclick="replyChat()">Kirim</button>
-      <div id="chatOutput"></div>
+      <input type="text" id="chatInput" placeholder="Tulis sesuatu...">
+      <button onclick="sendChat()">Kirim</button>
+      <div class="chat-box" id="chatOutput"></div>
     </section>
 
+    <!-- FITUR PENCATATAN -->
     <section>
       <h2>2. Bisnis & Pencatatan 📊</h2>
-      <p>Dari ide bisnis, catatan keuangan, hingga rencana pengembangan—semua bisa dibantu Babra.</p>
+      <input type="text" id="noteTitle" placeholder="Judul Catatan">
+      <textarea id="noteContent" rows="3" placeholder="Tulis catatan..."></textarea>
+      <button onclick="addNote()">Simpan Catatan</button>
+      <div class="note-list" id="noteList"></div>
     </section>
 
+    <!-- FITUR LAGU -->
     <section>
       <h2>3. Nyanyian Lagu 🎵</h2>
-      <p>Babra suka nyanyi! Yuk, dengerin suaranya di bawah ini:</p>
-      <audio controls>
-        <source src="lagu-babra.mp3" type="audio/mpeg">
-        Maaf, browser kamu tidak mendukung pemutar audio.
-      </audio>
+      <p>Upload atau pilih lagu untuk diputar:</p>
+      <input type="file" id="audioFile" accept="audio/*" onchange="playSelectedAudio()">
+      <audio id="audioPlayer" controls style="margin-top: 1rem; width: 100%; display: none;"></audio>
     </section>
 
+    <!-- FITUR REMINDER -->
     <section>
       <h2>4. Reminder Otomatis ⏰</h2>
-      <p>Klik tombol di bawah untuk diingatkan dalam 10 detik:</p>
+      <label for="reminderTime">Pilih Waktu:</label>
+      <input type="datetime-local" id="reminderTime">
+      <input type="text" id="reminderMsg" placeholder="Tulis pesan pengingat...">
       <button onclick="setReminder()">Setel Reminder</button>
     </section>
   </main>
@@ -115,22 +127,67 @@
   </footer>
 
   <script>
-    function replyChat() {
-      const input = document.getElementById("chatInput").value;
+    // Fitur Chat
+    function sendChat() {
+      const input = document.getElementById("chatInput");
       const output = document.getElementById("chatOutput");
-      if (input.trim() === "") return;
-      output.innerHTML += `<p><strong>Kamu:</strong> ${input}</p>`;
-      output.innerHTML += `<p><strong>Babra:</strong> Wah, menarik ya! "${input}" 💙</p>`;
-      document.getElementById("chatInput").value = "";
+      const message = input.value.trim();
+      if (message === "") return;
+      output.innerHTML += `<p><strong>Kamu:</strong> ${message}</p>`;
+      output.innerHTML += `<p><strong>Babra:</strong> Wah, kamu bilang: "${message}" yaa~ 😄</p>`;
+      input.value = "";
+      output.scrollTop = output.scrollHeight;
     }
 
+    // Fitur Catatan
+    function addNote() {
+      const title = document.getElementById("noteTitle").value.trim();
+      const content = document.getElementById("noteContent").value.trim();
+      const list = document.getElementById("noteList");
+      if (title === "" || content === "") return;
+      list.innerHTML += `<div class="note-item"><strong>${title}</strong><br>${content}</div>`;
+      document.getElementById("noteTitle").value = "";
+      document.getElementById("noteContent").value = "";
+    }
+
+    // Fitur Lagu
+    function playSelectedAudio() {
+      const fileInput = document.getElementById("audioFile");
+      const player = document.getElementById("audioPlayer");
+      const file = fileInput.files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        player.src = url;
+        player.style.display = 'block';
+      }
+    }
+
+    // Fitur Reminder
     function setReminder() {
-      alert("Reminder disetel! Babra akan ingatkan kamu dalam 10 detik.");
+      const datetime = document.getElementById("reminderTime").value;
+      const message = document.getElementById("reminderMsg").value.trim();
+      if (!datetime || message === "") {
+        alert("Isi waktu dan pesan dulu ya, Pak Oktha 💙");
+        return;
+      }
+
+      const reminderTime = new Date(datetime).getTime();
+      const now = new Date().getTime();
+      const delay = reminderTime - now;
+
+      if (delay <= 0) {
+        alert("Waktu reminder sudah lewat! 😅");
+        return;
+      }
+
+      alert("Reminder disetel dengan sukses 💙 Babra siap ingatkan kamu!");
+
       setTimeout(() => {
-        alert("⏰ Waktunya! Babra ingetin kamu sekarang!");
-      }, 10000);
+        alert("⏰ Reminder: " + message);
+      }, delay);
     }
   </script>
+
 </body>
   </html>
   
