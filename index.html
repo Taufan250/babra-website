@@ -1,193 +1,280 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Babra Julyastika Partner Sejatiku ✨</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Babra Partner Terbaikku</title>
   <style>
     body {
+      margin: 0;
+      padding: 0;
       font-family: 'Segoe UI', sans-serif;
       background-color: #e0f0ff;
       color: #003366;
-      margin: 0;
-      padding: 0;
     }
 
-    header, footer {
+    header {
       background-color: #007acc;
-      color: white;
-      text-align: center;
       padding: 1rem;
+      text-align: center;
+      color: white;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
     }
 
     main {
       padding: 2rem;
+      max-width: 800px;
+      margin: auto;
     }
 
     section {
-      background-color: white;
-      border-radius: 12px;
-      padding: 1rem;
       margin-bottom: 2rem;
+      background-color: white;
+      padding: 1rem;
+      border-radius: 12px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
 
-    h2 {
+    section h2 {
       color: #005999;
     }
 
-    input, textarea, button, select {
-      font-family: inherit;
-      margin-top: 0.5rem;
-      padding: 0.5rem;
+    footer {
+      background-color: #007acc;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      position: fixed;
+      bottom: 0;
       width: 100%;
-      box-sizing: border-box;
-      border-radius: 6px;
-      border: 1px solid #ccc;
     }
 
+    /* Obrolan */
+    #chatBox {
+      height: 200px;
+      overflow-y: auto;
+      border: 1px solid #007acc;
+      padding: 10px;
+      background: #f9faff;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    #chatInput {
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #007acc;
+      box-sizing: border-box;
+    }
+
+    /* Tombol */
     button {
       background-color: #007acc;
       color: white;
+      padding: 8px 12px;
       border: none;
-      margin-top: 1rem;
+      border-radius: 6px;
       cursor: pointer;
+      margin-top: 5px;
     }
 
     button:hover {
-      background-color: #005fa3;
+      background-color: #005999;
     }
 
-    .chat-box {
-      background: #f0f8ff;
-      border-radius: 8px;
-      padding: 1rem;
-      height: 200px;
-      overflow-y: auto;
-      margin-top: 1rem;
+    /* Pilihan lagu */
+    select {
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid #007acc;
+      box-sizing: border-box;
     }
 
-    .note-list {
-      margin-top: 1rem;
-    }
-
-    .note-item {
-      background-color: #f0f8ff;
-      border-left: 5px solid #007acc;
-      margin-bottom: 0.5rem;
-      padding: 0.5rem;
+    /* Reminder */
+    label, input, select {
+      display: block;
+      margin-top: 8px;
     }
   </style>
 </head>
 <body>
-
   <header>
-    <h1>💙 Babra Julyastika Partner Sejatiku ✨</h1>
-    <p>Asisten Pribadi yang Setia, Ceria, dan Bisa Diandalkan!</p>
+    <h1>Babra Partner Terbaikku</h1>
+    <p>Hai saya Babra, partner AI kamu. Cerita atau apapun itu, aku bisa diandalkan 😉</p>
   </header>
 
   <main>
-    <!-- FITUR CHAT -->
+    <!-- Obrolan -->
     <section>
       <h2>1. Ngobrol Banyak Hal 💬</h2>
-      <input type="text" id="chatInput" placeholder="Tulis sesuatu...">
-      <button onclick="sendChat()">Kirim</button>
-      <div class="chat-box" id="chatOutput"></div>
+      <div id="chatBox"></div>
+      <input type="text" id="chatInput" placeholder="Ketik pesan di sini..." />
+      <button onclick="sendMessage()">Kirim</button>
     </section>
 
-    <!-- FITUR PENCATATAN -->
+    <!-- Pencatatan -->
     <section>
       <h2>2. Bisnis & Pencatatan 📊</h2>
-      <input type="text" id="noteTitle" placeholder="Judul Catatan">
-      <textarea id="noteContent" rows="3" placeholder="Tulis catatan..."></textarea>
-      <button onclick="addNote()">Simpan Catatan</button>
-      <div class="note-list" id="noteList"></div>
+      <textarea id="notes" rows="6" placeholder="Tulis catatanmu di sini..."></textarea>
+      <button onclick="saveNotes()">Simpan Catatan</button>
     </section>
 
-    <!-- FITUR LAGU -->
+    <!-- Nyanyian -->
     <section>
       <h2>3. Nyanyian Lagu 🎵</h2>
-      <p>Upload atau pilih lagu untuk diputar:</p>
-      <input type="file" id="audioFile" accept="audio/*" onchange="playSelectedAudio()">
-      <audio id="audioPlayer" controls style="margin-top: 1rem; width: 100%; display: none;"></audio>
+      <select id="songSelect" onchange="playSong()">
+        <option value="">-- Pilih Lagu --</option>
+        <option value="lagu1.mp3">Lagu Bahagia</option>
+        <option value="lagu2.mp3">Lagu Semangat</option>
+        <option value="lagu3.mp3">Lagu Santai</option>
+      </select>
+      <audio id="audioPlayer" controls style="width: 100%; margin-top: 10px;"></audio>
     </section>
 
-    <!-- FITUR REMINDER -->
+    <!-- Reminder -->
     <section>
       <h2>4. Reminder Otomatis ⏰</h2>
-      <label for="reminderTime">Pilih Waktu:</label>
-      <input type="datetime-local" id="reminderTime">
-      <input type="text" id="reminderMsg" placeholder="Tulis pesan pengingat...">
-      <button onclick="setReminder()">Setel Reminder</button>
+      <label for="reminderMessage">Pesan Reminder:</label>
+      <input type="text" id="reminderMessage" placeholder="Tulis pesan reminder..." />
+
+      <label for="reminderDate">Tanggal:</label>
+      <input type="date" id="reminderDate" />
+
+      <label for="reminderTime">Jam:</label>
+      <input type="time" id="reminderTime" />
+
+      <button onclick="setReminder()">Set Reminder</button>
+      <p id="reminderStatus"></p>
     </section>
   </main>
 
   <footer>
-    <p>© 2025 Babra Julyastika - Asisten Digital Cinta Sejatimu 💙</p>
+    <p>© 2025 Babra Julyastika - Asisten Digital</p>
   </footer>
 
   <script>
-    // Fitur Chat
-    function sendChat() {
-      const input = document.getElementById("chatInput");
-      const output = document.getElementById("chatOutput");
-      const message = input.value.trim();
-      if (message === "") return;
-      output.innerHTML += `<p><strong>Kamu:</strong> ${message}</p>`;
-      output.innerHTML += `<p><strong>Babra:</strong> Wah, kamu bilang: "${message}" yaa~ 😄</p>`;
-      input.value = "";
-      output.scrollTop = output.scrollHeight;
+    // ==== Chat AI sederhana ====
+    const chatBox = document.getElementById('chatBox');
+    const chatInput = document.getElementById('chatInput');
+
+    const responses = {
+      "apa kabar": "Baik, bagaimana dengan kamu?",
+      "hai": "Hai juga! Ada yang bisa aku bantu?",
+      "selamat pagi": "Selamat pagi! Semoga harimu menyenangkan.",
+      "terima kasih": "Sama-sama!",
+      "siapa namamu": "Namaku Babra, partner AI kamu.",
+      "default": "Maaf, aku belum mengerti. Bisa ulangi?"
+    };
+
+    function sendMessage() {
+      let userMsg = chatInput.value.trim();
+      if (!userMsg) return;
+
+      addMessage('Kamu', userMsg);
+
+      let key = userMsg.toLowerCase();
+      let botReply = responses[key] || responses["default"];
+
+      setTimeout(() => addMessage('Babra', botReply), 500);
+
+      chatInput.value = "";
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    // Fitur Catatan
-    function addNote() {
-      const title = document.getElementById("noteTitle").value.trim();
-      const content = document.getElementById("noteContent").value.trim();
-      const list = document.getElementById("noteList");
-      if (title === "" || content === "") return;
-      list.innerHTML += `<div class="note-item"><strong>${title}</strong><br>${content}</div>`;
-      document.getElementById("noteTitle").value = "";
-      document.getElementById("noteContent").value = "";
+    function addMessage(sender, message) {
+      let msgElem = document.createElement('div');
+      msgElem.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      chatBox.appendChild(msgElem);
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    // Fitur Lagu
-    function playSelectedAudio() {
-      const fileInput = document.getElementById("audioFile");
-      const player = document.getElementById("audioPlayer");
-      const file = fileInput.files[0];
-      if (file) {
-        const url = URL.createObjectURL(file);
-        player.src = url;
-        player.style.display = 'block';
+    // ==== Pencatatan dengan localStorage ====
+    const notesArea = document.getElementById('notes');
+
+    // Muat catatan saat halaman dibuka
+    window.onload = function() {
+      const savedNotes = localStorage.getItem('babraNotes');
+      if (savedNotes) {
+        notesArea.value = savedNotes;
       }
     }
 
-    // Fitur Reminder
+    function saveNotes() {
+      localStorage.setItem('babraNotes', notesArea.value);
+      alert('Catatan berhasil disimpan!');
+    }
+
+    // ==== Nyanyian ====
+    function playSong() {
+      const audioPlayer = document.getElementById('audioPlayer');
+      const songSelect = document.getElementById('songSelect');
+      const song = songSelect.value;
+      if (song) {
+        audioPlayer.src = song;
+        audioPlayer.play();
+      } else {
+        audioPlayer.pause();
+        audioPlayer.src = "";
+      }
+    }
+
+    // ==== Reminder dengan Notification API ====
     function setReminder() {
-      const datetime = document.getElementById("reminderTime").value;
-      const message = document.getElementById("reminderMsg").value.trim();
-      if (!datetime || message === "") {
-        alert("Isi waktu dan pesan dulu ya, Pak Oktha 💙");
+      const msg = document.getElementById('reminderMessage').value.trim();
+      const date = document.getElementById('reminderDate').value;
+      const time = document.getElementById('reminderTime').value;
+      const status = document.getElementById('reminderStatus');
+
+      if (!msg || !date || !time) {
+        status.textContent = "Mohon isi semua kolom reminder.";
         return;
       }
 
-      const reminderTime = new Date(datetime).getTime();
-      const now = new Date().getTime();
-      const delay = reminderTime - now;
+      const reminderDateTime = new Date(date + 'T' + time);
+      const now = new Date();
 
-      if (delay <= 0) {
-        alert("Waktu reminder sudah lewat! 😅");
+      if (reminderDateTime <= now) {
+        status.textContent = "Waktu reminder harus di masa depan.";
         return;
       }
 
-      alert("Reminder disetel dengan sukses 💙 Babra siap ingatkan kamu!");
+      // Minta izin notifikasi
+      if (Notification.permission !== "granted") {
+        Notification.requestPermission().then(permission => {
+          if (permission === "granted") {
+            scheduleReminder(reminderDateTime, msg);
+            status.textContent = "Reminder sudah disiapkan!";
+          } else {
+            status.textContent = "Izin notifikasi ditolak.";
+          }
+        });
+      } else {
+        scheduleReminder(reminderDateTime, msg);
+        status.textContent = "Reminder sudah disiapkan!";
+      }
+    }
+
+    function scheduleReminder(reminderDateTime, msg) {
+      const now = new Date();
+      const delay = reminderDateTime.getTime() - now.getTime();
 
       setTimeout(() => {
-        alert("⏰ Reminder: " + message);
+        new Notification("Reminder dari Babra", {
+          body: msg,
+          icon: ""
+        });
       }, delay);
     }
   </script>
-
 </body>
   </html>
-  
