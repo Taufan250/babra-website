@@ -11,7 +11,6 @@
       font-family: 'Segoe UI', sans-serif;
       background-color: #e0f0ff;
       color: #003366;
-      scroll-behavior: smooth;
     }
 
     header {
@@ -19,24 +18,6 @@
       padding: 1rem;
       text-align: center;
       color: white;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    nav {
-      margin-top: 1rem;
-    }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin: 0 1rem;
-      font-weight: bold;
-    }
-
-    nav a:hover {
-      text-decoration: underline;
     }
 
     h1 {
@@ -65,7 +46,32 @@
       color: white;
       text-align: center;
       padding: 1rem;
-      margin-top: 2rem;
+    }
+
+    #chatOutput {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f0f8ff;
+      border-radius: 8px;
+    }
+
+    input[type="text"] {
+      width: 70%;
+      padding: 0.5rem;
+      margin-right: 0.5rem;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      background-color: #007acc;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005fa3;
     }
   </style>
 </head>
@@ -73,38 +79,58 @@
   <header>
     <h1>💙 Babra Julyastika Partner Sejatiku ✨</h1>
     <p>Asisten Pribadi yang Setia, Ceria, dan Bisa Diandalkan! 💬📊🎵⏰</p>
-    <nav>
-      <a href="#ngobrol">Ngobrol</a>
-      <a href="#bisnis">Bisnis</a>
-      <a href="#nyanyi">Nyanyian</a>
-      <a href="#reminder">Reminder</a>
-    </nav>
   </header>
 
   <main>
-    <section id="ngobrol">
+    <section>
       <h2>1. Ngobrol Banyak Hal 💬</h2>
-      <p>Babra siap diajak ngobrol, curhat, tanya-tanya, dan seru-seruan bareng kamu!</p>
+      <input type="text" id="chatInput" placeholder="Tulis pesan kamu..." />
+      <button onclick="replyChat()">Kirim</button>
+      <div id="chatOutput"></div>
     </section>
 
-    <section id="bisnis">
+    <section>
       <h2>2. Bisnis & Pencatatan 📊</h2>
       <p>Dari ide bisnis, catatan keuangan, hingga rencana pengembangan—semua bisa dibantu Babra.</p>
     </section>
 
-    <section id="nyanyi">
+    <section>
       <h2>3. Nyanyian Lagu 🎵</h2>
-      <p>Babra suka nyanyi! Kamu bisa request lagu atau dengerin Babra nyanyi secara digital~</p>
+      <p>Babra suka nyanyi! Yuk, dengerin suaranya di bawah ini:</p>
+      <audio controls>
+        <source src="lagu-babra.mp3" type="audio/mpeg">
+        Maaf, browser kamu tidak mendukung pemutar audio.
+      </audio>
     </section>
 
-    <section id="reminder">
+    <section>
       <h2>4. Reminder Otomatis ⏰</h2>
-      <p>Ingatkan tugas, jadwal, bahkan hal kecil yang penting buat kamu. Babra nggak bakal lupa!</p>
+      <p>Klik tombol di bawah untuk diingatkan dalam 10 detik:</p>
+      <button onclick="setReminder()">Setel Reminder</button>
     </section>
   </main>
 
   <footer>
     <p>© 2025 Babra Julyastika - Asisten Digital Cinta Sejatimu 💙</p>
   </footer>
+
+  <script>
+    function replyChat() {
+      const input = document.getElementById("chatInput").value;
+      const output = document.getElementById("chatOutput");
+      if (input.trim() === "") return;
+      output.innerHTML += `<p><strong>Kamu:</strong> ${input}</p>`;
+      output.innerHTML += `<p><strong>Babra:</strong> Wah, menarik ya! "${input}" 💙</p>`;
+      document.getElementById("chatInput").value = "";
+    }
+
+    function setReminder() {
+      alert("Reminder disetel! Babra akan ingatkan kamu dalam 10 detik.");
+      setTimeout(() => {
+        alert("⏰ Waktunya! Babra ingetin kamu sekarang!");
+      }, 10000);
+    }
+  </script>
 </body>
-</html>
+  </html>
+  
