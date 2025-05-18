@@ -1,8 +1,8 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Babra Partner Terbaikku</title>
   <style>
     body {
@@ -12,25 +12,21 @@
       background-color: #e0f0ff;
       color: #003366;
     }
-
     header {
       background-color: #007acc;
       padding: 1rem;
       text-align: center;
       color: white;
     }
-
     h1 {
       margin: 0;
       font-size: 2rem;
     }
-
     main {
       padding: 2rem;
       max-width: 800px;
       margin: auto;
     }
-
     section {
       margin-bottom: 2rem;
       background-color: white;
@@ -38,11 +34,9 @@
       border-radius: 12px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
-
     section h2 {
       color: #005999;
     }
-
     footer {
       background-color: #007acc;
       color: white;
@@ -52,7 +46,6 @@
       bottom: 0;
       width: 100%;
     }
-
     /* Obrolan */
     #chatBox {
       height: 200px;
@@ -64,7 +57,6 @@
       margin-bottom: 10px;
       font-size: 14px;
     }
-
     #chatInput {
       width: 100%;
       padding: 8px;
@@ -73,7 +65,6 @@
       border: 1px solid #007acc;
       box-sizing: border-box;
     }
-
     /* Tombol */
     button {
       background-color: #007acc;
@@ -84,11 +75,9 @@
       cursor: pointer;
       margin-top: 5px;
     }
-
     button:hover {
       background-color: #005999;
     }
-
     /* Pilihan lagu */
     select {
       width: 100%;
@@ -99,11 +88,25 @@
       border: 1px solid #007acc;
       box-sizing: border-box;
     }
-
     /* Reminder */
     label, input, select {
       display: block;
       margin-top: 8px;
+    }
+    /* Tabel catatan */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #007acc;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #007acc;
+      color: white;
     }
   </style>
 </head>
@@ -125,8 +128,35 @@
     <!-- Pencatatan -->
     <section>
       <h2>2. Bisnis & Pencatatan 📊</h2>
-      <textarea id="notes" rows="6" placeholder="Tulis catatanmu di sini..."></textarea>
-      <button onclick="saveNotes()">Simpan Catatan</button>
+
+      <label for="filterDate">Pilih Tanggal untuk Lihat Catatan:</label>
+      <input type="date" id="filterDate" onchange="showNotesByDate()" />
+
+      <hr />
+
+      <label for="noteText">Tulis Catatan Baru:</label>
+      <textarea id="noteText" rows="4" placeholder="Tulis catatan di sini..."></textarea>
+
+      <label for="noteDate">Tanggal Catatan:</label>
+      <input type="date" id="noteDate" />
+
+      <label for="noteTime">Jam Catatan:</label>
+      <input type="time" id="noteTime" />
+
+      <button onclick="saveNewNote()">Simpan Catatan</button>
+
+      <p id="notesMessage" style="margin-top: 10px; font-weight: bold; color: #007acc;"></p>
+
+      <table id="notesTable" style="display:none;">
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Jam</th>
+            <th>Catatan</th>
+          </tr>
+        </thead>
+        <tbody id="notesBody"></tbody>
+      </table>
     </section>
 
     <!-- Nyanyian -->
@@ -198,83 +228,53 @@
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    // ==== Pencatatan dengan localStorage ====
-    const notesArea = document.getElementById('notes');
+    // ==== Pencatatan dengan localStorage dan filter tanggal ====
+    const notesMessage = document.getElementById('notesMessage');
+    const notesTable = document.getElementById('notesTable');
+    const notesBody = document.getElementById('notesBody');
+    const filterDateInput = document.getElementById('filterDate');
 
-    // Muat catatan saat halaman dibuka
-    window.onload = function() {
-      const savedNotes = localStorage.getItem('babraNotes');
-      if (savedNotes) {
-        notesArea.value = savedNotes;
+    // Fungsi untuk ambil semua catatan dari localStorage (format: array objek)
+    function getAllNotes() {
+      let notes = localStorage.getItem('babraNotesAll');
+      if (notes) {
+        return JSON.parse(notes);
       }
+      return [];
     }
 
-    function saveNotes() {
-      localStorage.setItem('babraNotes', notesArea.value);
-      alert('Catatan berhasil disimpan!');
+    // Simpan semua catatan ke localStorage
+    function saveAllNotes(notesArray) {
+      localStorage.setItem('babraNotesAll', JSON.stringify(notesArray));
     }
 
-    // ==== Nyanyian ====
-    function playSong() {
-      const audioPlayer = document.getElementById('audioPlayer');
-      const songSelect = document.getElementById('songSelect');
-      const song = songSelect.value;
-      if (song) {
-        audioPlayer.src = song;
-        audioPlayer.play();
-      } else {
-        audioPlayer.pause();
-        audioPlayer.src = "";
-      }
-    }
+    // Tampilkan catatan berdasarkan tanggal filter
+    function showNotesByDate() {
+      const filterDate = filterDateInput.value;
+      notesBody.innerHTML = "";
+      notesTable.style.display = "none";
+      notesMessage.textContent = "";
 
-    // ==== Reminder dengan Notification API ====
-    function setReminder() {
-      const msg = document.getElementById('reminderMessage').value.trim();
-      const date = document.getElementById('reminderDate').value;
-      const time = document.getElementById('reminderTime').value;
-      const status = document.getElementById('reminderStatus');
-
-      if (!msg || !date || !time) {
-        status.textContent = "Mohon isi semua kolom reminder.";
+      if (!filterDate) {
+        notesMessage.textContent = "Silakan pilih tanggal terlebih dahulu.";
         return;
       }
 
-      const reminderDateTime = new Date(date + 'T' + time);
-      const now = new Date();
+      const allNotes = getAllNotes();
+      const filtered = allNotes.filter(n => n.date === filterDate);
 
-      if (reminderDateTime <= now) {
-        status.textContent = "Waktu reminder harus di masa depan.";
+      if (filtered.length === 0) {
+        notesMessage.textContent = "Belum ada catatan Kak.";
         return;
       }
 
-      // Minta izin notifikasi
-      if (Notification.permission !== "granted") {
-        Notification.requestPermission().then(permission => {
-          if (permission === "granted") {
-            scheduleReminder(reminderDateTime, msg);
-            status.textContent = "Reminder sudah disiapkan!";
-          } else {
-            status.textContent = "Izin notifikasi ditolak.";
-          }
-        });
-      } else {
-        scheduleReminder(reminderDateTime, msg);
-        status.textContent = "Reminder sudah disiapkan!";
-      }
-    }
-
-    function scheduleReminder(reminderDateTime, msg) {
-      const now = new Date();
-      const delay = reminderDateTime.getTime() - now.getTime();
-
-      setTimeout(() => {
-        new Notification("Reminder dari Babra", {
-          body: msg,
-          icon: ""
-        });
-      }, delay);
-    }
-  </script>
-</body>
-  </html>
+      filtered.forEach(note => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${note.date}</td>
+          <td>${note.time}</td>
+          <td>${note.text}</td>
+        `;
+        notesBody.appendChild(tr);
+      });
+      notesTable.style
