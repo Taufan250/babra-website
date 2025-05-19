@@ -82,13 +82,10 @@
       color: white;
       border: none;
     }
-    table, th, td {
-      border: 1px solid #ccc;
-      border-collapse: collapse;
-      padding: 5px;
-    }
-    .form-inline input {
-      margin-right: 10px;
+    iframe {
+      width: 100%;
+      height: 200px;
+      border: none;
       margin-bottom: 10px;
     }
   </style>
@@ -132,61 +129,24 @@
     </div>
   </div>
 
-  <!-- Catatan Bisnis Buat -->
-  <div id="buat-catatan" class="form-section">
-    <h3>Buat Catatan</h3>
-    <div>
-      <strong>Pilih Jenis:</strong>
-      <button onclick="showSubForm('pemasukan')">Pemasukan</button>
-      <button onclick="showSubForm('pengeluaran')">Pengeluaran</button>
-    </div>
-    <div id="pemasukan" style="display:none">
-      <h4>Pemasukan</h4>
-      <input type="datetime-local" id="tglMasuk">
-      <input type="number" id="jumlahMasuk" placeholder="Jumlah">
-      <input type="text" id="namaMasuk" placeholder="Nama Pemasukan">
-      <button onclick="simpanCatatan('pemasukan')">Simpan</button>
-    </div>
-    <div id="pengeluaran" style="display:none">
-      <h4>Pengeluaran</h4>
-      <input type="datetime-local" id="tglKeluar">
-      <input type="number" id="jumlahKeluar" placeholder="Jumlah">
-      <input type="text" id="namaKeluar" placeholder="Nama Pengeluaran">
-      <button onclick="simpanCatatan('pengeluaran')">Simpan</button>
-    </div>
-  </div>
-
-  <!-- Catatan Bisnis Lihat -->
-  <div id="lihat-catatan" class="form-section">
-    <h3>Lihat Catatan</h3>
-    <input type="date" id="tanggalCari">
-    <button onclick="lihatCatatan()">Cari</button>
-    <div id="hasilCatatan"></div>
-  </div>
-
-  <!-- Lagu Section -->
+  <!-- Lagu Sections -->
   <div id="lagu-bahagia" class="music-section">
     <h3>Lagu Bahagia</h3>
-    <ul>
-      <li><button onclick="playSong('bahagia1.mp3')">Lagu Bahagia 1</button></li>
-      <li><button onclick="playSong('bahagia2.mp3')">Lagu Bahagia 2</button></li>
-    </ul>
+    <iframe src="https://www.youtube.com/embed/CZP0ZJlaF1Y" allowfullscreen></iframe>
+    <iframe src="https://www.youtube.com/embed/MZb-M0BMO9E" allowfullscreen></iframe>
   </div>
+
   <div id="lagu-sedih" class="music-section">
     <h3>Lagu Sedih</h3>
-    <ul>
-      <li><button onclick="playSong('sedih1.mp3')">Lagu Sedih 1</button></li>
-      <li><button onclick="playSong('sedih2.mp3')">Lagu Sedih 2</button></li>
-    </ul>
+    <iframe src="https://www.youtube.com/embed/2UJ6Db-q3ZA" allowfullscreen></iframe>
+    <iframe src="https://www.youtube.com/embed/xIvuX1U_7W0" allowfullscreen></iframe>
   </div>
+
   <div id="lagu-romantis" class="music-section">
     <h3>Lagu Romantis</h3>
-    <ul>
-      <li><button onclick="playSong('romantis1.mp3')">Lagu Romantis 1</button></li>
-      <li><button onclick="playSong('romantis2.mp3')">Lagu Romantis 2</button></li>
-    </ul>
+    <iframe src="https://www.youtube.com/embed/2Vv-BfVoq4g" allowfullscreen></iframe>
+    <iframe src="https://www.youtube.com/embed/IcrbM1l_BoI" allowfullscreen></iframe>
   </div>
-  <audio id="audioPlayer" controls style="margin-top: 10px;"></audio>
 </div>
 
 <script>
@@ -202,7 +162,7 @@
 
   function sendMessage() {
     const input = document.getElementById('userInput');
-    const msg = input.value.trim();
+    const msg = input.value.trim().toLowerCase();
     if (!msg) return;
     const chat = document.getElementById('chatMessages');
     chat.innerHTML += `<p><strong>Kamu:</strong> ${msg}</p>`;
@@ -214,49 +174,19 @@
   }
 
   function generateReply(msg) {
-    return "Aku di sini untuk bantu kamu!";
-  }
-
-  function showSubForm(type) {
-    document.getElementById('pemasukan').style.display = 'none';
-    document.getElementById('pengeluaran').style.display = 'none';
-    document.getElementById(type).style.display = 'block';
-  }
-
-  function simpanCatatan(type) {
-    let data = JSON.parse(localStorage.getItem('catatanBabra') || '[]');
-    const entry = {
-      type,
-      waktu: document.getElementById(type === 'pemasukan' ? 'tglMasuk' : 'tglKeluar').value,
-      jumlah: document.getElementById(type === 'pemasukan' ? 'jumlahMasuk' : 'jumlahKeluar').value,
-      nama: document.getElementById(type === 'pemasukan' ? 'namaMasuk' : 'namaKeluar').value
+    const replies = {
+      "hai": "Hai juga! Ada yang bisa Babra bantu?",
+      "nama kamu siapa": "Namaku Babra, asisten digital kamu!",
+      "siapa yang membuatmu": "Aku dibuat oleh seorang yang diam diam mengagumimu! dia ingin selalu hadir walaupun dalam versi ai",
+      "apa tujuan kamu dibuat": "Untuk membantumu dalam aktivitas harian, dari ngobrol sampai hiburan.",
+      "bagaimana cuaca hari ini": "Aku tidak bisa melihat cuaca langsung, tapi semoga cerah untukmu!",
+      "dapatkah kamu berikan aku saran": "Tentu! Jangan menyerah, teruslah mencoba dan tetap semangat.",
+      "aku lagi sedih": "Sedih itu manusiawi. Ceritakan saja, aku siap mendengarkan.",
+      "bagaimana cara hapus dia dari ingatan saya": "Waktu dan kesibukan akan membantu. Fokus pada dirimu sekarang.",
+      "kapan waktu terbaik menikah": "Ketika kamu dan pasangan siap secara mental, emosional, dan finansial.",
+      "kenapa orang lain sudah sukses saya belum": "Setiap orang punya waktunya. Fokus dan sabar, waktumu akan datang."
     };
-    data.push(entry);
-    localStorage.setItem('catatanBabra', JSON.stringify(data));
-    alert('Catatan tersimpan!');
-  }
-
-  function lihatCatatan() {
-    const tanggal = document.getElementById('tanggalCari').value;
-    const data = JSON.parse(localStorage.getItem('catatanBabra') || '[]');
-    const hasil = data.filter(d => d.waktu.startsWith(tanggal));
-    const div = document.getElementById('hasilCatatan');
-    if (hasil.length === 0) {
-      div.innerHTML = '<p>Catatan Kosong. Silakan buat catatan.</p>';
-    } else {
-      let table = '<table><tr><th>Jenis</th><th>Tanggal</th><th>Jumlah</th><th>Nama</th></tr>';
-      hasil.forEach(d => {
-        table += `<tr><td>${d.type}</td><td>${d.waktu}</td><td>${d.jumlah}</td><td>${d.nama}</td></tr>`;
-      });
-      table += '</table>';
-      div.innerHTML = table;
-    }
-  }
-
-  function playSong(file) {
-    const audio = document.getElementById('audioPlayer');
-    audio.src = file;
-    audio.play();
+    return replies[msg] || "Maaf, aku belum mengerti. Bisa kamu ulangi dengan cara lain?";
   }
 </script>
 
