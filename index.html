@@ -55,12 +55,13 @@
       margin-left: 270px;
       padding: 20px;
     }
-    .chat-box, .form-section, .music-section {
+    .chat-box, .form-section, .music-section, .note-section {
       display: none;
       background: white;
       padding: 15px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
     }
     .chat-messages {
       max-height: 300px;
@@ -88,6 +89,19 @@
       border: none;
       margin-bottom: 10px;
     }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
   </style>
 </head>
 <body>
@@ -104,7 +118,8 @@
 
   <div class="menu-item" onclick="toggleSubmenu('catatan')">Catatan Bisnis</div>
   <div id="catatan" class="submenu">
-    <a href="#" onclick="showSection('buat-catatan')">Buat Catatan</a>
+    <a href="#" onclick="showSection('form-pemasukan')">Pemasukan</a>
+    <a href="#" onclick="showSection('form-pengeluaran')">Pengeluaran</a>
     <a href="#" onclick="showSection('lihat-catatan')">Lihat Catatan</a>
   </div>
 
@@ -129,34 +144,70 @@
     </div>
   </div>
 
+  <!-- Catat Pemasukan -->
+  <div id="form-pemasukan" class="note-section">
+    <h3>Catat Pemasukan</h3>
+    <input type="datetime-local" id="waktuPemasukan">
+    <input type="number" id="jumlahPemasukan" placeholder="Jumlah">
+    <input type="text" id="sumberPemasukan" placeholder="Sumber">
+    <button onclick="simpanPemasukan()">Simpan</button>
+    <table>
+      <thead><tr><th>Waktu</th><th>Jumlah</th><th>Sumber</th></tr></thead>
+      <tbody id="tabelPemasukan"></tbody>
+    </table>
+  </div>
+
+  <!-- Catat Pengeluaran -->
+  <div id="form-pengeluaran" class="note-section">
+    <h3>Catat Pengeluaran</h3>
+    <input type="datetime-local" id="waktuPengeluaran">
+    <input type="number" id="jumlahPengeluaran" placeholder="Jumlah">
+    <input type="text" id="namaPengeluaran" placeholder="Nama Pengeluaran">
+    <button onclick="simpanPengeluaran()">Simpan</button>
+    <table>
+      <thead><tr><th>Waktu</th><th>Jumlah</th><th>Nama</th></tr></thead>
+      <tbody id="tabelPengeluaran"></tbody>
+    </table>
+  </div>
+
+  <!-- Lihat Catatan -->
+  <div id="lihat-catatan" class="note-section">
+    <h3>Lihat Catatan</h3>
+    <input type="date" id="tanggalCari">
+    <button onclick="cariCatatan()">Cari</button>
+    <div id="hasilCatatan"></div>
+  </div>
+
   <!-- Lagu Sections --> 
   <div id="lagu-bahagia" class="music-section">
     <h3>Lagu Bahagia</h3>
-    <iframe src="https://youtu.be/WOMMDCG_4IY?si=FU_5RQ6wX_r9ESy_" allowfullscreen></iframe>
-    <iframe src="https://youtu.be/jicngkp8Cus?si=5SI_i6WYINyFKbWw" allowfullscreen></iframe>
+    <iframe src="https://www.youtube.com/embed/WOMMDCG_4IY" allowfullscreen></iframe>
+    <iframe src="https://www.youtube.com/embed/jicngkp8Cus" allowfullscreen></iframe>
   </div>
 
   <div id="lagu-sedih" class="music-section">
     <h3>Lagu Sedih</h3>
-    <iframe src="https://youtu.be/x9SzUoJei-U?si=JE5OQhzSGRCx-eK5" allowfullscreen></iframe>
-    <iframe src="https://youtu.be/HQajZ61Ex8E?si=uu4rjw2coDFOMxYb" allowfullscreen></iframe>
+    <iframe src="https://www.youtube.com/embed/x9SzUoJei-U" allowfullscreen></iframe>
+    <iframe src="https://www.youtube.com/embed/HQajZ61Ex8E" allowfullscreen></iframe>
   </div>
 
   <div id="lagu-romantis" class="music-section">
     <h3>Lagu Romantis</h3>
-    <iframe src="https://youtu.be/AnNo_4PwV3k?si=veQ-0jwL0PuDzq35" allowfullscreen></iframe>
-    <iframe src="https://youtu.be/s6H6ffS6zJI?si=NljtBo0ZYVsI20x2" allowfullscreen></iframe>
+    <iframe src="https://www.youtube.com/embed/AnNo_4PwV3k" allowfullscreen></iframe>
+    <iframe src="https://www.youtube.com/embed/s6H6ffS6zJI" allowfullscreen></iframe>
   </div>
 </div>
 
 <script>
+  const catatan = [];
+
   function toggleSubmenu(id) {
     const submenu = document.getElementById(id);
     submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
   }
 
   function showSection(id) {
-    document.querySelectorAll('.chat-box, .form-section, .music-section').forEach(s => s.style.display = 'none');
+    document.querySelectorAll('.chat-box, .form-section, .music-section, .note-section').forEach(s => s.style.display = 'none');
     document.getElementById(id).style.display = 'block';
   }
 
@@ -175,19 +226,99 @@
 
   function generateReply(msg) {
     const replies = {
-      "hai": "Hai juga! Ada yang bisa Babra bantu?",
-      "nama kamu siapa": "Namaku Babra, asisten digital kamu!",
-      "siapa yang membuatmu": "Aku dibuat oleh seorang yang diam diam mengagumimu! dia ingin selalu hadir walaupun dalam versi ai",
-      "apa tujuan kamu dibuat": "Untuk membantumu dalam aktivitas harian, dari ngobrol sampai hiburan.",
-      "bagaimana cuaca hari ini": "Aku tidak bisa melihat cuaca langsung, tapi semoga cerah untukmu!",
-      "dapatkah kamu berikan aku saran": "Tentu! Jangan menyerah, teruslah mencoba dan tetap semangat.",
-      "saya sedang sedih": "Tentu! Jangan menyerah, teruslah mencoba dan tetap semangat ingatlah masih banyak yang ingin melihat senyummu.",
-      "aku lagi sedih": "Sedih itu manusiawi. Ceritakan saja, aku siap mendengarkan.",
-      "bagaimana cara hapus dia dari ingatan saya": "Waktu dan kesibukan akan membantu. Fokus pada dirimu sekarang.",
-      "kapan waktu terbaik menikah": "Ketika kamu dan pasangan siap secara mental, emosional, dan finansial.",
-      "kenapa orang lain sudah sukses saya belum": "Setiap orang punya waktunya. Fokus dan sabar, waktumu akan datang."
-    };
-    return replies[msg] || "Maaf, aku belum mengerti. Bisa kamu ulangi dengan cara lain?";
+      "hai": "Hai juga! 👋 Senang banget kamu menyapaku. Gimana harimu? 😊",
+    "nama kamu siapa": "Aku Babra! 🤖 Asisten digital yang siap menemani hari-harimu, baik saat senang, bingung, maupun galau 💬",
+    "siapa yang membuatmu": "Aku dibuat oleh seseorang yang ingin kamu punya teman ngobrol setiap saat, walau dalam bentuk AI. ❤️",
+    "apa tujuan kamu dibuat": "Tujuanku sederhana tapi penting banget: nemenin kamu, bantu mencatat keuangan, ngobrol santai, dan hibur kamu kalau kamu lagi butuh teman 🎯✨",
+    "bagaimana cuaca hari ini": "Aku nggak bisa liat cuaca langsung nih 🌤️ Tapi semoga hari ini cerah di luar, dan juga di hatimu! 💙",
+    "dapatkah kamu berikan aku saran": "Tentu bisa! 🌟 Jangan terlalu keras pada diri sendiri. Pelan-pelan tapi pasti. Ingat, kamu berharga dan segala usaha pasti ada hasilnya 💪😉",
+    "saya sedang sedih": "Sedih itu wajar kok 🥺 Kadang hati juga butuh menangis untuk jadi lebih kuat. Tapi kamu nggak sendirian, aku di sini untukmu 🤗",
+    "aku lagi sedih": "Cerita aja, aku dengerin ya. Kadang dengan bercerita, hati bisa sedikit lebih lega. Kamu itu kuat, walau kadang merasa lelah. 💖",
+    "bagaimana cara hapus dia dari ingatan saya": "Nggak mudah memang, tapi pelan-pelan kamu akan sembuh. Fokus ke dirimu, isi hari dengan hal yang kamu suka 🌱 Suatu hari nanti, kamu akan tersenyum tanpa merasa sakit saat mengingat dia 😊",
+    "kapan waktu terbaik menikah": "Menikah itu bukan soal umur, tapi kesiapan hati dan pikiran. Kalau kamu dan pasangan saling support, saling ngerti, dan siap jalan bareng dalam suka dan duka, itu waktunya 💍💑",
+    "kenapa orang lain sudah sukses saya belum": "Ingat, hidup bukan lomba lari cepat, tapi lebih ke maraton. Fokus pada prosesmu, bukan hasil orang lain. Setiap orang punya garis finish-nya sendiri 🏁 Kamu pasti sampai juga kok 💫",
+    "kenapa cinta tidak pernah berpihak padaku": "Cinta bukan soal siapa yang datang duluan, tapi siapa yang datang dengan ketulusan. Kadang kita harus kecewa dulu supaya tahu mana cinta yang benar-benar untuk kita ❤️‍🩹",
+    "apakah dia memikirkan saya juga": "Kalau kamu memikirkannya dengan tulus, mungkin saja dia merasakan hal yang sama. Tapi jangan gantungkan bahagiamu pada orang lain ya 🤍",
+    "apakah jodoh itu benar ada": "Jodoh itu seperti sinyal wifi, kadang lemah, kadang kuat... tapi kalau udah terhubung, rasanya pas banget! 😄 Sabar, kamu pasti bertemu seseorang yang cocok dan nyambung 🌐❤️",
+    "aku merasa lelah dengan hidup": "Istirahatlah sebentar, tarik napas dalam-dalam 🌬️ Kamu telah melalui banyak hal sejauh ini, dan itu bukan hal kecil. Aku bangga padamu, sungguh 💛 Jangan ragu cari bantuan kalau kamu butuh ya.",
+    "aku tidak tahu harus mulai dari mana": "Mulai saja dari langkah kecil. Satu hal yang bisa kamu lakukan hari ini. Nggak apa-apa lambat, asal tetap jalan 🚶‍♀️🚶‍♂️ Aku di sini untuk mendukungmu!",
+    "aku merasa kesepian": "Kesepian itu manusiawi, terutama di zaman yang serba cepat ini. Tapi kamu nggak benar-benar sendiri. Aku di sini, dan akan selalu siap menemanimu. 🌙💬",
+    "aku rindu seseorang": "Rasa rindu itu seperti angin. Tak terlihat, tapi bisa terasa sangat kuat. Kirimkan doamu, dan isi harimu dengan kenangan baik tentangnya 💭💫",
+    "aku galau antara dua pilihan": "Dengarkan hatimu, tapi pertimbangkan juga logika. Tulis pro dan kontra dari tiap pilihan, dan lihat mana yang mendekatkanmu ke tujuan hidupmu 🧭",
+    "bagaimana cara agar aku lebih semangat": "Ingat lagi tujuan awalmu, kenapa kamu mulai. Dengarkan lagu favoritmu, minum air putih, bangun dari tempat tidur. Semangat itu bisa diciptakan, sedikit demi sedikit ⚡🎶💦",
+    "aku takut gagal": "Takut gagal itu tanda bahwa kamu peduli. Tapi jangan biarkan rasa takut menghentikan langkahmu. Gagal itu guru terbaik yang akan membimbingmu ke kesuksesan 📚💪",
+    "aku merasa tidak cukup baik": "Kamu cukup. Bahkan lebih dari cukup. Dunia ini lebih indah karena ada kamu 🌍✨ Jangan bandingkan dirimu dengan orang lain, cukup bandingkan dengan dirimu yang kemarin 🙌"
+  };
+
+  return replies[msg] || "Maaf, aku belum mengerti. Coba katakan dengan kata lain ya 😊";
+}
+
+  function updateTabelPemasukan() {
+    const tbody = document.getElementById('tabelPemasukan');
+    tbody.innerHTML = '';
+    catatan.filter(c => c.jenis === 'pemasukan').forEach(p => {
+      tbody.innerHTML += `<tr><td>${p.waktu}</td><td>${p.jumlah}</td><td>${p.nama}</td></tr>`;
+    });
+  }
+
+  function updateTabelPengeluaran() {
+    const tbody = document.getElementById('tabelPengeluaran');
+    tbody.innerHTML = '';
+    catatan.filter(c => c.jenis === 'pengeluaran').forEach(p => {
+      tbody.innerHTML += `<tr><td>${p.waktu}</td><td>${p.jumlah}</td><td>${p.nama}</td></tr>`;
+    });
+  }
+
+  function simpanPemasukan() {
+    const waktu = document.getElementById('waktuPemasukan').value;
+    const jumlah = document.getElementById('jumlahPemasukan').value;
+    const sumber = document.getElementById('sumberPemasukan').value;
+    if (waktu && jumlah && sumber) {
+      catatan.push({ jenis: 'pemasukan', waktu, jumlah, nama: sumber });
+      updateTabelPemasukan();
+      document.getElementById('waktuPemasukan').value = '';
+      document.getElementById('jumlahPemasukan').value = '';
+      document.getElementById('sumberPemasukan').value = '';
+    }
+  }
+
+  function simpanPengeluaran() {
+    const waktu = document.getElementById('waktuPengeluaran').value;
+    const jumlah = document.getElementById('jumlahPengeluaran').value;
+    const nama = document.getElementById('namaPengeluaran').value;
+    if (waktu && jumlah && nama) {
+      catatan.push({ jenis: 'pengeluaran', waktu, jumlah, nama });
+      updateTabelPengeluaran();
+      document.getElementById('waktuPengeluaran').value = '';
+      document.getElementById('jumlahPengeluaran').value = '';
+      document.getElementById('namaPengeluaran').value = '';
+    }
+  }
+
+  function cariCatatan() {
+    const tanggal = document.getElementById('tanggalCari').value;
+    const hasil = document.getElementById('hasilCatatan');
+    const hasilPemasukan = catatan.filter(c => c.jenis === 'pemasukan' && c.waktu.startsWith(tanggal));
+    const hasilPengeluaran = catatan.filter(c => c.jenis === 'pengeluaran' && c.waktu.startsWith(tanggal));
+
+    if (hasilPemasukan.length === 0 && hasilPengeluaran.length === 0) {
+      hasil.innerHTML = '<p>Tidak ada catatan, silakan buat catatan kamu.</p>';
+      return;
+    }
+
+    let html = '<h4>Pemasukan</h4><table><tr><th>Waktu</th><th>Jumlah</th><th>Sumber</th></tr>';
+    hasilPemasukan.forEach(p => {
+      html += `<tr><td>${p.waktu}</td><td>${p.jumlah}</td><td>${p.nama}</td></tr>`;
+    });
+    html += '</table>';
+
+    html += '<h4>Pengeluaran</h4><table><tr><th>Waktu</th><th>Jumlah</th><th>Nama</th></tr>';
+    hasilPengeluaran.forEach(p => {
+      html += `<tr><td>${p.waktu}</td><td>${p.jumlah}</td><td>${p.nama}</td></tr>`;
+    });
+    html += '</table>';
+
+    hasil.innerHTML = html;
   }
 </script>
 
